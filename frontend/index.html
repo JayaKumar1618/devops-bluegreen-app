@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>🚀 DevOps Dashboard</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+      text-align: center;
+      padding: 50px;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px auto;
+      width: 320px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .status-ok {
+      color: #22c55e;
+      font-weight: bold;
+    }
+
+    .status-fail {
+      color: #ef4444;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🚀 DevOps Deployment Dashboard</h1>
+
+<div class="card">
+  <h2>Version</h2>
+  <p id="version">Loading...</p>
+</div>
+
+<div class="card">
+  <h2>Status</h2>
+  <p id="status">Checking...</p>
+</div>
+
+<div class="card">
+  <h2>Server</h2>
+  <p id="host">Loading...</p>
+</div>
+
+<div class="card">
+  <h2>Last Updated</h2>
+  <p id="time">--</p>
+</div>
+
+<script>
+async function fetchData() {
+  try {
+    // Fetch main data
+    const res = await fetch("http://3.84.98.190");
+    const data = await res.json();
+
+    document.getElementById("version").innerText = data.version;
+    document.getElementById("host").innerText = data.hostname;
+    document.getElementById("time").innerText = data.timestamp;
+
+    // Fetch health
+    const health = await fetch("http://3.84.98.190/health");
+
+    if (health.status === 200) {
+      document.getElementById("status").innerHTML =
+        "<span class='status-ok'>🟢 Healthy</span>";
+    } else {
+      document.getElementById("status").innerHTML =
+        "<span class='status-fail'>🔴 Unhealthy</span>";
+    }
+
+  } catch (err) {
+    document.getElementById("status").innerHTML =
+      "<span class='status-fail'>🔴 Server Down</span>";
+  }
+}
+
+// Refresh every 3 seconds
+setInterval(fetchData, 3000);
+fetchData();
+</script>
+
+</body>
+</html>
